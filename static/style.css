@@ -1,0 +1,63 @@
+body {
+    margin: 0;
+    background: rgb(40, 40, 40);
+    color: aliceblue;
+    min-height: 800px;
+}
+
+header{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.post{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.postCard{
+    padding: 1%;
+    width: 300px;
+    background-color: #4b4a4a;;
+    border: 10px solid;
+    border-radius: 5px;
+    margin: 25px;
+}
+
+#linkButton, #linkButton2 {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    color: cyan;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.toggleDisplayNone{
+    display: none;
+}
+
+
+button,
+input,
+label {
+    margin: 1%;
+}
+
+#auth,
+#btns {
+    justify-content: center;
+    display: block;
+
+}
+
+#errMsg1, #errMsg2, #errMsg3 {
+    color: red;
+    font-size: large;
+}

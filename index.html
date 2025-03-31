@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Слоняры</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Добро пожаловать.</h1>
+        <h2 id="h2reg">Пожалуйста, зерегистрируйтесь или авторизуйтесь</h2>
+        <div id="reg">
+            <h3>Регистрация</h3>
+
+            <label>Логин</label></br>
+            <input id="regLogin" type="text" maxlength="15" autocomplete="off" placeholder="Логин" /></br>
+
+            <label>Имя</label></br>
+            <input id="regName" type="text" maxlength="20" autocomplete="off" placeholder="Имя" /></br>
+
+            <label>Пароль</label></br>
+            <input id="regPass" type="password" maxlength="255" autocomplete="off" placeholder="Пароль" /></br>
+
+            <button id="btnReg" type="submit">Зарегистрироваться</button></br>
+            <span id="errMsg1"></span></br>
+        </div>
+
+        <div id="login" class="toggleDisplayNone">
+            <h3>Авторизация</h3>
+
+            <label>Логин</label></br>
+            <input id="logLogin" type="text" maxlength="15" autocomplete="off" placeholder="Логин" /></br>
+
+            <label>Пароль</label></br>
+            <input id="logPass" type="password" maxlength="255" autocomplete="off" placeholder="Пароль" /></br>
+
+            <button id="btnLogin" type="submit">Авторизоваться</button></br><span id="errMsg2"></span></br>
+            <button id="linkButton2" type="submit">Ещё не зарегистрированы?</button>
+        </div>
+        <button id="linkButton" type="submit">Уже зарегистрированы?</button>
+    </header>
+    <div class="post">
+        <div id="newPosts" style="display: none;">
+            <label>Текст</label></br>
+            <textarea id="post" maxlength="200" rows="5" cols="40" style="resize: none;"></textarea></br>
+            <button id="postText" type="submit">Отправить</button><span id="errMsg3"></span></br>
+        </div>
+        <div id="posts" style="display: none;">
+
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

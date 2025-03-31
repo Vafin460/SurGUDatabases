@@ -1,0 +1,17 @@
+{
+  "name": "slonyratwitter",
+  "version": "1.0.0",
+  "description": "наш слонярский твиттер",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "author": "Vadim Vafin",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "mysql": "^2.18.1",
+    "socket.io": "^4.8.1"
+  }
+}
