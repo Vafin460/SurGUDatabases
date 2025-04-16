@@ -26,6 +26,32 @@ header{
     border: 10px solid;
     border-radius: 5px;
     margin: 25px;
+    .like-button {
+        width: 22px;
+        height: 22px;
+    } 
+    p {
+        margin: 5px;
+    }
+}
+
+
+
+.commCard {
+    padding: 1%;
+    width: 300px;
+    background-color: #4b4a4a;;
+    border: 10px solid;
+    border-radius: 5px;
+    margin: 25px;
+    margin-left: 100px;
+    button {
+        width: 22px;
+         height: 22px;
+    } 
+    p {
+        margin: 5px;
+    }
 }
 
 #linkButton, #linkButton2 {
@@ -60,4 +86,15 @@ label {
 #errMsg1, #errMsg2, #errMsg3 {
     color: red;
     font-size: large;
+}
+
+.like-button.active-like {
+    background-color: green;
+    
+    font-weight: bold;
+}
+
+.like-button.active-dislike {
+    background-color: red;
+    font-weight: bold;
 }

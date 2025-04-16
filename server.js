@@ -22,7 +22,7 @@ function regisr(log, name, pass) {
     const connection = mysql.createConnection(module.exports)
     connection.connect();
 
-    let query = `INSERT INTO users (usId, usLogin, usName, usPass) VALUES (NULL, '${log}', '${name}', '${pass}') `
+    let query = `INSERT INTO users (id, login, name, pass) VALUES (NULL, '${log}', '${name}', '${pass}') `
 
     connection.query(query, function (error, result) {
         console.log(result);
@@ -47,7 +47,7 @@ function newPost(sessionUserId, nPost) {
 
     console.log(today);
 
-    let query = `INSERT INTO posts (postId, postUserId, postText, postDate) VALUES (NULL, '${sessionUserId}', '${nPost}', NOW())`;
+    let query = `INSERT INTO posts (id, postUserId, postText, postDate) VALUES (NULL, '${sessionUserId}', '${nPost}', NOW())`;
 
     connection.query(query, function (error, result) {
         console.log(error);
@@ -69,11 +69,11 @@ server.listen(5000, function () {
 
 
 io.on("connection", (socket) => {
-    socket.on("getAllPost", () => {
+    socket.on("getAllPost", (sessionId) => {
         const connection = mysql.createConnection(module.exports)
         connection.connect();
 
-        let query = `SELECT posts.postId, users.usName, posts.postText, postDate FROM posts JOIN users ON posts.postUserId = users.usId ORDER BY posts.postId DESC`;
+        let query = `SELECT posts.id, users.name, posts.postText, posts.postDate, posts.parent_id, COALESCE(SUM(likes.liketype), 0) AS total_likes, lik.likeType AS likedTypeById FROM posts JOIN users ON posts.postUserId = users.id LEFT JOIN likes ON posts.id = likes.postId LEFT JOIN likes AS lik ON posts.id = lik.postId AND lik.userId = '${sessionId}' GROUP BY posts.id, users.name, posts.postText, posts.postDate, posts.parent_id, lik.likeType ORDER BY posts.id DESC`;
 
         connection.query(query, function (error, result) {
             console.log(result);
@@ -85,7 +85,6 @@ io.on("connection", (socket) => {
     });
 
     socket.on("reg", (regLogin, regName, regPass) => {
-        conn();
         regisr(regLogin, regName, regPass);
         console.log("reg");
     });
@@ -95,13 +94,13 @@ io.on("connection", (socket) => {
         const connection = mysql.createConnection(module.exports)
         connection.connect();
         var id;
-        let query = `SELECT users.usId FROM users WHERE users.usLogin = '${logLogin}' AND users.usPass = '${logPass}'`
+        let query = `SELECT users.id FROM users WHERE users.login = '${logLogin}' AND users.pass = '${logPass}'`
 
         connection.query(query, function (error, result) {
             console.log(error);
             console.log(result);
             try{
-                socket.emit("authorised", (result[0].usId));
+                socket.emit("authorised", (result[0].id));
             }
             catch (error){
                 socket.emit("authorised", (-1));
@@ -115,5 +114,20 @@ io.on("connection", (socket) => {
         console.log("login");
         newPost(sessionUserId, nPost);
         io.emit("updatePost", 1);
+    });
+
+    socket.on("likePost", (postId, userId, likeType) => {
+        const connection = mysql.createConnection(module.exports)
+        connection.connect();
+
+        let query2 = `DELETE FROM likes WHERE likes.postId = '${postId}' AND likes.userId = '${userId}'`;
+        let query =  `INSERT INTO likes (postId, userId, likeType) VALUES ('${postId}', '${userId}', '${likeType}');`
+        connection.query(query2, function (error, result) {
+            
+        });
+        connection.query(query, function (error, result) {
+            io.emit("updatePost", 1);
+        });
+        connection.end();
     });
 });

@@ -3,10 +3,10 @@ var socket = io();
 var userName;
 let sessionUserId = 0;
 
-//logAsAdmin();
-//getAllPost();
+logAsAdmin();
+getAllPost();
 function logAsAdmin() {
-    sessionUserId = 1;
+    sessionUserId = 5;
     console.log(sessionUserId);
     document.getElementById('reg').style = 'display: none;';
     document.getElementById('login').style = 'display: none;';
@@ -73,25 +73,80 @@ btnLogin.onclick = function () {
 };
 
 function getAllPost() {
-    socket.emit("getAllPost");
+    socket.emit("getAllPost", sessionUserId);
 }
 
 socket.on("allPost", (rows) => {
     document.getElementById('posts').innerHTML = '';
     let result = Object.values(JSON.parse(JSON.stringify(rows)));
 
-    result.forEach((v) => {
-        let div = document.createElement('div');
-        div.className = "postCard";
-        div.innerHTML = `
-        
-    <p>${v.usName}</p>
-    <p>${v.postText}</p>
-    <p><small>${v.postDate.slice(0, -14)}</small></p>
+    const posts = result.filter(post => post.parent_id == 0);
+    const comments = result.filter(post => post.parent_id != 0);
 
+    // console.log(posts);
+    // console.log(comments);
+
+    posts.forEach((v) => {
+        let div = document.createElement('div');
+        
+        const likeClass = v.likedTypeById == 1 ? 'active-like' : '';
+        const dislikeClass = v.likedTypeById == -1 ? 'active-dislike' : ''; 
+
+        div.className = "postCard";
+        div.innerHTML = 
+        `
+        <p>${v.name}</p>
+        <p>${v.postText}</p>
+        <p><small>${v.postDate.slice(0, -14)}</small></p>
+
+        <div class="likesSection">    
+                <button class="like-button like ${likeClass}" data-postid="${v.id}" data-action="like">+</button> 
+                <button class="like-button dislike ${dislikeClass}"" data-postid="${v.id}" data-action="dislike">-</button> 
+                <span class="likes">${v.total_likes}</span>  
+
+                <button class="commButton">Коментировать</Button>          
+        </div>
         `;
+
         document.getElementById('posts').append(div);
+        const relatedComments = comments.filter(c => c.parent_id === v.id);
+        // console.log(relatedComments);
+
+        relatedComments.forEach((comm) => {
+            const likeClass = comm.likedTypeById == 1 ? 'active-like' : '';
+            const dislikeClass = comm.likedTypeById == -1 ? 'active-dislike' : ''; 
+
+            let div2 = document.createElement('div');
+            div2.className = "commCard";
+            div2.innerHTML = 
+            `
+            <p>${comm.name}</p>
+            <p>${comm.postText}</p>
+            <p><small>${comm.postDate.slice(0, -14)}</small></p>
+
+            <div class="likesSection">    
+                <button class="like-button like ${likeClass}" data-postid="${comm.id}" data-action="like">+</button> 
+                <button class="like-button dislike ${dislikeClass}"" data-postid="${comm.id}" data-action="dislike">-</button> 
+                <span class="likes">${comm.total_likes}</span>             
+            </div>
+            `
+            document.getElementById('posts').append(div2);
+        })
     });
+});
+
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('like-button')) {
+        const postId = e.target.dataset.postid;
+        const action = e.target.dataset.action;
+        
+        console.log(`Нажата кнопка: ${action} для поста ${postId}`);
+        if (action == "like"){
+            socket.emit("likePost", postId, sessionUserId, 1);
+        } else {
+            socket.emit("likePost", postId, sessionUserId, -1);
+        }
+    }
 });
 
 socket.on("authorised", (id) => {
@@ -113,7 +168,7 @@ socket.on("authorised", (id) => {
 
 postText.onclick = function () {
     var nPost = document.getElementById('post').value;
-    if (!nPost){
+    if (!nPost) {
         return;
     }
     console.log(nPost);
@@ -122,7 +177,7 @@ postText.onclick = function () {
 };
 socket.on("updatePost", (id) => {
     console.log("updatePost");
-    socket.emit("getAllPost");
+    getAllPost();
 });
 
 
