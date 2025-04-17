@@ -31,7 +31,7 @@ function regisr(log, name, pass) {
     connection.end();
 };
 
-function newPost(sessionUserId, nPost) {
+function newPost(sessionUserId, nPost, nParent_id) {
     const connection = mysql.createConnection(module.exports)
     connection.connect();
 
@@ -42,16 +42,16 @@ function newPost(sessionUserId, nPost) {
     Day = Data.getDate();
     Hours = Data.getHours();
     Minut = Data.getMinutes();
-
+    console.log(nParent_id);
     let today = `${Year}-${Month}-${Day} ${Hours}:${Minut}`;
 
-    console.log(today);
+    // console.log(today);
 
-    let query = `INSERT INTO posts (id, postUserId, postText, postDate) VALUES (NULL, '${sessionUserId}', '${nPost}', NOW())`;
+    let query = `INSERT INTO posts (id, postUserId, postText, postDate, parent_id) VALUES (NULL, '${sessionUserId}', '${nPost}', NOW(), '${nParent_id}')`;
 
     connection.query(query, function (error, result) {
         console.log(error);
-        console.log(result);
+        // console.log(result);
     });
     connection.end();
 };
@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
         let query = `SELECT posts.id, users.name, posts.postText, posts.postDate, posts.parent_id, COALESCE(SUM(likes.liketype), 0) AS total_likes, lik.likeType AS likedTypeById FROM posts JOIN users ON posts.postUserId = users.id LEFT JOIN likes ON posts.id = likes.postId LEFT JOIN likes AS lik ON posts.id = lik.postId AND lik.userId = '${sessionId}' GROUP BY posts.id, users.name, posts.postText, posts.postDate, posts.parent_id, lik.likeType ORDER BY posts.id DESC`;
 
         connection.query(query, function (error, result) {
-            console.log(result);
+            // console.log(result);
             socket.emit("allPost", (result));
             //console.log("Все посты отправлены");
         });
@@ -110,9 +110,9 @@ io.on("connection", (socket) => {
     });
 
 
-    socket.on("newPost", (sessionUserId, nPost) => {
+    socket.on("newPost", (sessionUserId, nPost, nParent_id) => {
         console.log("login");
-        newPost(sessionUserId, nPost);
+        newPost(sessionUserId, nPost, nParent_id);
         io.emit("updatePost", 1);
     });
 
