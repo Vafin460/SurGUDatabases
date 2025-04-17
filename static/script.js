@@ -3,8 +3,8 @@ var socket = io();
 var userName;
 let sessionUserId = 0;
 
-logAsAdmin();
-getAllPost();
+// logAsAdmin();
+// getAllPost();
 function logAsAdmin() {
     sessionUserId = 5;
     console.log(sessionUserId);
